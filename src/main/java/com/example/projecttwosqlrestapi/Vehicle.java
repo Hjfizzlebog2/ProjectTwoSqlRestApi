@@ -1,20 +1,27 @@
 package com.example.projecttwosqlrestapi;
 
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
  * This is a super class called Vehicle. It holds all the basic properties of any
  * vehicle type like the make, model, model year, retail price etc.
  */
+@Entity
+@Table(name = "vehicles")
 public class Vehicle implements Serializable {
     private static final long serialVersionUID = 1864726920921172988L;
     private String make;
     private String model;
+    private int milesPerGallon;
+    private boolean isFourWheelDrive;
+
     private String makeModel;
     private int modelYear;
     private int retailPrice;
-    private int milesPerGallon;
-    private boolean isFourWheelDrive;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     // constructor
@@ -41,6 +48,10 @@ public class Vehicle implements Serializable {
         this.makeModel = makeModel;
         this.modelYear = modelYear;
         this.retailPrice = retailPrice;
+    }
+
+    public Vehicle() {
+
     }
 
     // getter for id

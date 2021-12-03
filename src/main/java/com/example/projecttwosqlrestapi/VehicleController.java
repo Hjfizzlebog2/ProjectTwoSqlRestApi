@@ -3,6 +3,7 @@ package com.example.projecttwosqlrestapi;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.CharEncoding;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,9 @@ import java.util.*;
 
 @RestController
 public class VehicleController {
+
+    @Autowired
+    private VehicleDao vehicleDao;
 
     /**
      * Adds a Vehicle to the text file.
