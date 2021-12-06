@@ -8,8 +8,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 @RestController
 public class VehicleController {
@@ -74,64 +79,22 @@ public class VehicleController {
     }
 
     /**
-     * Deletes Vehicle from text file
+     * Deletes Vehicle from database
      *
      * @param id id of Vehicle to be deleted from database
      * @return ResponseEntity indicating if deletion is successful
      * @throws IOException for error handling
      */
-    //NOTE: CURRENT METHOD IS SLOW, BUT IT WORKS. CAN REFACTOR LATER
-    // In order to delete, just read file line by line and do nothing if it is the vehicle you want to delete
     @RequestMapping(value = "/deleteVehicle/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<String> deleteVehicle(@PathVariable("id") int id) throws IOException {
-        File inventoryFile = new File("./inventory.txt");
-        File tempInventoryFile = new File("./tempInventory.txt");
-
-        // MAKE TEMP COPY OF FILE
-        FileUtils.copyFile(inventoryFile, tempInventoryFile);
-
-        // CLEAR OLD FILE
-        PrintWriter writer = new PrintWriter(inventoryFile);
-        writer.print("");
-        writer.close();
-
-        // START TO ADD BACK LINES TO FILE ONE BY ONE
-        FileWriter output = new FileWriter(tempInventoryFile,true);
-        Scanner tempInventoryFileScanner = new Scanner(tempInventoryFile);
-        ObjectMapper mapper = new ObjectMapper();
-        Vehicle currentVehicle = null;
-        boolean deletionIsSuccessful = false;
-        while (tempInventoryFileScanner.hasNextLine()) {
-            String currentLine = tempInventoryFileScanner.nextLine(); // get current line
-            currentVehicle = mapper.readValue(currentLine,Vehicle.class); // got current vehicle
-            if (deletionIsSuccessful || currentVehicle.getId() != id) { // as long as vehicle id does not match
-                //Serialize object to JSON and write to file
-                mapper.writeValue(output,currentVehicle); // write vehicle to file in JSON format
-
-                //Append a new line character to the file
-                //Above FileWriter "output" is automatically closed by the mapper
-                FileUtils.writeStringToFile(new File("./inventory.txt"),
-                        System.lineSeparator(),
-                        CharEncoding.UTF_8,
-                        true);
-            } else {
-                deletionIsSuccessful = true;
-                // by not writing data, we are therefore deleting it from the file
-            }
-        }
-
-        // DELETE TEMP COPY
-        FileUtils.deleteQuietly(tempInventoryFile);
-
-        //RETURN ResponseEntity DEPENDING ON DELETION STATUS
-        if (deletionIsSuccessful) {
+        if (vehicleDao.contains(id)) {
+            vehicleDao.delete(vehicleDao.getById(id));
             return new ResponseEntity<>("Deletion successful.",
                     HttpStatus.OK);
         } else {
             return new ResponseEntity<>("Deletion unsuccessful." +
                     " ID not in inventory.", HttpStatus.NOT_FOUND);
         }
-
     }
 
     /**

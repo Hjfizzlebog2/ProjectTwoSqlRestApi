@@ -37,4 +37,8 @@ public class VehicleDao {
         entityManager.remove(vehicleToDelete);
     }
 
+    public boolean contains(int id) {
+        return entityManager.contains(getById(id));
+    }
+
 }
