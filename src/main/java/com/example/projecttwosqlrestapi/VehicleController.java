@@ -18,50 +18,27 @@ public class VehicleController {
     private VehicleDao vehicleDao;
 
     /**
-     * Adds a Vehicle to the text file.
+     * Adds a Vehicle to the database.
      * @param newVehicle Vehicle to be added
      * @return Vehicle that is added
-     * @throws IOException when error with file handling
+     * @throws IOException for error handling
      */
     @RequestMapping(value = "/addVehicle",method = RequestMethod.POST)
     public Vehicle addVehicle(@RequestBody Vehicle newVehicle) throws IOException {
-        //ObjectMapper provides functionality for reading and writing JSON
-        ObjectMapper mapper = new ObjectMapper();
-
-        //Create a FileWrite to write to inventory.txt and APPEND mode is true
-        FileWriter output = new FileWriter("./inventory.txt",true);
-
-        //Serialize object to JSON and write to file
-        mapper.writeValue(output,newVehicle);
-
-        //Append a new line character to the file
-        //Above FileWriter "output" is automatically closed by the mapper
-        FileUtils.writeStringToFile(new File("./inventory.txt"),
-                System.lineSeparator(), CharEncoding.UTF_8, true);
+        vehicleDao.create(newVehicle);
         return newVehicle;
     }
 
     /**
      * Gets Vehicle with given ID
      *
-     * @param id the id of the vehicle to be searched for
+     * @param id the id of the vehicle to query from database
      * @return vehicle with given ID
-     * @throws IOException when error with file handling
+     * @throws IOException for error handling
      */
     @RequestMapping(value = "/getVehicle/{id}", method = RequestMethod.GET)
     public Vehicle getVehicle(@PathVariable("id") int id) throws IOException {
-        Vehicle currentVehicle = null;
-        ObjectMapper mapper = new ObjectMapper();
-
-        Scanner fileScan = new Scanner(new File("./inventory.txt"));
-        while (fileScan.hasNextLine()) {
-            String currentLine = fileScan.nextLine();
-            Vehicle vehicleInFile = mapper.readValue(currentLine,Vehicle.class);
-            if (vehicleInFile.getId() == id) {
-                currentVehicle = vehicleInFile;
-            }
-        }
-        return currentVehicle;
+        return vehicleDao.getById(id);
     }
 
     /**
@@ -69,7 +46,7 @@ public class VehicleController {
      *
      * @param newVehicle the Vehicle to be updated
      * @return the newer edition of the Vehicle
-     * @throws IOException when error in file handling
+     * @throws IOException for error handling
      */
     @RequestMapping(value = "/updateVehicle", method = RequestMethod.PUT)
     public Vehicle updateVehicle(@RequestBody Vehicle newVehicle) throws IOException {
@@ -99,9 +76,9 @@ public class VehicleController {
     /**
      * Deletes Vehicle from text file
      *
-     * @param id id of Vehicle to be deleted
+     * @param id id of Vehicle to be deleted from database
      * @return ResponseEntity indicating if deletion is successful
-     * @throws IOException when error in file handling
+     * @throws IOException for error handling
      */
     //NOTE: CURRENT METHOD IS SLOW, BUT IT WORKS. CAN REFACTOR LATER
     // In order to delete, just read file line by line and do nothing if it is the vehicle you want to delete
@@ -160,8 +137,8 @@ public class VehicleController {
     /**
      * Gets the 10 most recent Vehicles in the text file
      *
-     * @return List of 10 most recent Vehicles
-     * @throws IOException when error in file handling
+     * @return List of 10 most recent Vehicles from database
+     * @throws IOException for error handling
      */
     @RequestMapping(value = "/getLatestVehicles", method=RequestMethod.GET)
     public List<Vehicle> getLatestVehicles() throws IOException {
