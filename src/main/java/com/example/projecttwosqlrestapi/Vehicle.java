@@ -11,38 +11,21 @@ import java.io.Serializable;
 @Table(name = "vehicles")
 public class Vehicle implements Serializable {
     private static final long serialVersionUID = 1864726920921172988L;
-    private String make;
-    private String model;
-    private int milesPerGallon;
-    private boolean isFourWheelDrive;
-
-    private String makeModel;
-    private int modelYear;
-    private int retailPrice;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
+    @Column
+    private String makeModel;
+
+    @Column
+    private int modelYear;
+
+    @Column
+    private int retailPrice;
+
     // constructor
-    public Vehicle(String make, String model, int modelYear, int price, int mpg, boolean isFourWheelDrive) {
-        this.make = make;
-        this. model = model;
-        this.modelYear = modelYear;
-        this.retailPrice = price;
-        this.milesPerGallon = mpg;
-        this.isFourWheelDrive = isFourWheelDrive;
-    }
-
-    // second constructor
-    public Vehicle(String makeModel,int modelYear,int retailPrice,boolean isFourWheelDrive) {
-        this.makeModel = makeModel;
-        this. modelYear = modelYear;
-        this.retailPrice = retailPrice;
-        this.isFourWheelDrive = isFourWheelDrive;
-    }
-
-    // third constructor
     public Vehicle(int id,String makeModel,int modelYear, int retailPrice) {
         this.id = id;
         this.makeModel = makeModel;
@@ -57,16 +40,6 @@ public class Vehicle implements Serializable {
     // getter for id
     public int getId() {
         return id;
-    }
-
-    // getter for make
-    public String getMake(){
-        return make;
-    }
-
-    // getter for model
-    public String getModel() {
-        return model;
     }
 
     // getter for makeModel
@@ -84,26 +57,6 @@ public class Vehicle implements Serializable {
         return retailPrice;
     }
 
-    // getter for miles per gallon
-    public int getMilesPerGallon() {
-        return milesPerGallon;
-    }
-
-    // getter for if the vehicle has four wheel drive
-    public boolean isFourWheelDrive() {
-        return isFourWheelDrive;
-    }
-
-    // setter method for make of vehicle
-    public void setMake(String make) {
-        this.make = make;
-    }
-
-    // setter method for model of vehicle
-    public void setModel(String model){
-        this.model = model;
-    }
-
     // setter method for makeModel of vehicle
     public void setMakeModel(String makeModel) {
         this.makeModel = makeModel;
@@ -119,33 +72,6 @@ public class Vehicle implements Serializable {
         this.retailPrice = price;
     }
 
-    // setter method for miles per gallon of vehicle
-    public void setMilesPerGallon(int mpg) {
-        this.milesPerGallon = mpg;
-    }
-
-    // setter for if vehicle has four wheel drive
-    public void setFourWheelDrive(boolean isFourWheelDrive) {
-        this.isFourWheelDrive = isFourWheelDrive;
-    }
-
-    /**
-     * This method prints out the correct string data to console as well as returns the string
-     */
-    public String printVehicle(){
-        String vehicleStr = modelYear + " " + make + " " + model + "\n" +
-                "$" + retailPrice + ",000" + "\n" + milesPerGallon + "MPG";
-
-        if(isFourWheelDrive) {
-            vehicleStr = modelYear + " " + make + " " + model + "\n" + "4WD" + "\n" +
-                    "$" + retailPrice + ",000" + "\n" + milesPerGallon + "MPG";
-        }
-
-        System.out.println(vehicleStr);
-
-        return vehicleStr;
-    }
-
     /**
      * This method prints out the correct string data to console when
      * using the second constructor as well as returns the string
@@ -154,19 +80,14 @@ public class Vehicle implements Serializable {
         String vehicleStr = id + " " + makeModel + " " + modelYear + " " +
                 "$" + retailPrice;
 
-        if(isFourWheelDrive) {
-            vehicleStr = modelYear + " " + makeModel + "\n" + "4WD" + "\n" +
-                    "$" + retailPrice;
-        }
-
         System.out.println(vehicleStr);
 
         return vehicleStr;
     }
 
-    // This is a toString method to print to the user the year, make, and model of the vehicle
+    // This is a toString method to print to the user the id,makeModel,modelYear, and retailPrice of the vehicle
     public String toString() {
-        return modelYear + " " + make + " " + model;
+        return id + " " + makeModel + " " + modelYear + " " + "$" + retailPrice;
     }
 
 }
