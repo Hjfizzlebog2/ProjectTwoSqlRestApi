@@ -1,20 +1,14 @@
 package com.example.projecttwosqlrestapi;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.CharEncoding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+
 
 @RestController
 public class VehicleController {
@@ -43,7 +37,8 @@ public class VehicleController {
      */
     @RequestMapping(value = "/getVehicle/{id}", method = RequestMethod.GET)
     public Vehicle getVehicle(@PathVariable("id") int id) throws IOException {
-        return vehicleDao.getById(id);
+            return vehicleDao.getById(id);
+
     }
 
     /**
@@ -55,27 +50,8 @@ public class VehicleController {
      */
     @RequestMapping(value = "/updateVehicle", method = RequestMethod.PUT)
     public Vehicle updateVehicle(@RequestBody Vehicle newVehicle) throws IOException {
-        //Vehicle object to update in file, Object Mapper to read file, and a scanner class
-        Vehicle updatedVehicle = null;
-        ObjectMapper mapper = new ObjectMapper();
-        Scanner fileScan = new Scanner(new File("./inventory.txt"));
-
-        //while file has a next line it will read line and deserialize it
-        while (fileScan.hasNextLine()) {
-            String currentLine = fileScan.nextLine();
-            Vehicle vehicleInFile = mapper.readValue(currentLine,Vehicle.class);
-
-            //if given vehicle parameter id matches the id in file it will update vehicle parameters to new vehicle.
-            if (vehicleInFile.getId() == newVehicle.getId()) {
-                updatedVehicle = vehicleInFile;
-                updatedVehicle.setMakeModel(newVehicle.getMakeModel());
-                updatedVehicle.setModelYear(newVehicle.getModelYear());
-                updatedVehicle.setRetailPrice(newVehicle.getRetailPrice());
-
-                mapper.writeValue(new File("./inventory.txt"), updatedVehicle);
-            }
-        }
-        return updatedVehicle;
+        vehicleDao.update(newVehicle);
+        return newVehicle;
     }
 
     /**
@@ -98,32 +74,14 @@ public class VehicleController {
     }
 
     /**
-     * Gets the 10 most recent Vehicles in the text file
+     * Gets the 10 most recent Vehicles from the database
      *
      * @return List of 10 most recent Vehicles from database
      * @throws IOException for error handling
      */
     @RequestMapping(value = "/getLatestVehicles", method=RequestMethod.GET)
     public List<Vehicle> getLatestVehicles() throws IOException {
-        Vehicle currentVehicle = null;
-        ObjectMapper mapper = new ObjectMapper();
-        List<Vehicle> latest = new ArrayList<>();
-
-        Scanner fileScan = new Scanner(new File("./inventory.txt"));
-
-        //Read each vehicle from file
-        while (fileScan.hasNextLine()) {
-            String currentLine = fileScan.nextLine();
-            Vehicle vehicleInFile = mapper.readValue(currentLine,Vehicle.class);
-
-            //Next vehicle in file added to list.
-            latest.add(vehicleInFile);
-
-            //When file exceeds 10 vehicles, earlier vehicles are removed.
-            if(latest.size() == 10) {
-                latest.remove(0);
-            }
-        }
-        return latest;
+        List<Vehicle> dataFromDataBase = vehicleDao.getAllData();
+        return dataFromDataBase.subList(dataFromDataBase.size() - 10,dataFromDataBase.size());
     }
 }

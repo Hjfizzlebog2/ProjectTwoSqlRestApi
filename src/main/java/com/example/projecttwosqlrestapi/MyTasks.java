@@ -1,13 +1,9 @@
 package com.example.projecttwosqlrestapi;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.CharEncoding;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -45,19 +41,8 @@ public class MyTasks extends VehicleController{
         //Create new Vehicle
         Vehicle newVehicle = new Vehicle(idCounter, makeModel, randomYear, randomPrice);
 
-        //ObjectMapper provides functionality for reading and writing JSON
-        ObjectMapper mapper = new ObjectMapper();
-
-        //Create a FileWrite to write to inventory.txt and APPEND mode is true
-        FileWriter output = new FileWriter("./inventory.txt",true);
-
-        //Serialize object to JSON and write to file
-        mapper.writeValue(output,newVehicle);
-
-        //Append a new line character to the file
-        //Above FileWriter "output" is automatically closed by the mapper
-        FileUtils.writeStringToFile(new File("./inventory.txt"),
-                System.lineSeparator(), CharEncoding.UTF_8, true);
+        // add the new random vehicle to the database
+        addVehicle(newVehicle);
     }
 
     static int startingID = 0;

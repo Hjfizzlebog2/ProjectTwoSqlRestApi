@@ -3,7 +3,11 @@ package com.example.projecttwosqlrestapi;
 import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * Data Access Object - provides some specific operations
@@ -37,8 +41,21 @@ public class VehicleDao {
         entityManager.remove(vehicleToDelete);
     }
 
+    // method to see if an Id exists in the database
     public boolean contains(int id) {
         return entityManager.contains(getById(id));
+    }
+
+    // update an entry in the database
+    public void update(Vehicle vehicleToUpdate) {
+        entityManager.merge(vehicleToUpdate);
+    }
+
+    // method to get all the entries in the database
+    @SuppressWarnings("unchecked")
+    public List<Vehicle> getAllData() {
+        Query query = entityManager.createNativeQuery("SELECT * FROM vehicles",Vehicle.class);
+        return query.getResultList();
     }
 
 }
